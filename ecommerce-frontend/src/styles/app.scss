@@ -39,6 +39,7 @@
   @import "cart.scss";
   @import "shipping";
   @import "login";
+  @import "search";
   
   @import "admin-styles/dashboard";
   @import "admin-styles/products";
@@ -82,31 +83,11 @@
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.heading{
+  @include heading;
+  margin: 1rem;
+  text-align: center;
+}
 
   
   .admin-container {
