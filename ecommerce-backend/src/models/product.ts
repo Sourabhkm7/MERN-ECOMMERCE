@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { trim } from "validator";
+
 
 
 const schema = new mongoose.Schema(
@@ -27,9 +27,10 @@ const schema = new mongoose.Schema(
       },
 
     },
-    {
-        timestamps:true,
-});
+  {
+      timestamps:true,
+    }
+);
 
 
 export const Product = mongoose.model("Product",schema);
