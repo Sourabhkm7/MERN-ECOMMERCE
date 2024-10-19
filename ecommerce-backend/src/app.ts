@@ -15,7 +15,7 @@ config({
     path:"./.env"
 });
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 const mongoURI= process.env.MONGO_URI || "";
 
 connectDB(mongoURI);
@@ -32,10 +32,10 @@ app.get("/", (req,res)=>{
     res.send("API Working with /api/v1")
 });
 
-//Using Routes
+//Using Routes 
 app.use("/api/v1/user",userRoute);
 app.use("/api/v1/product",productRoute);
-app.use("./api/v1/order",orderRoute)
+app.use("/api/v1/order",orderRoute)
 
 app.use("/uploads",express.static("uploads"));
 
