@@ -118,9 +118,9 @@ export const processOrder = TryCatch(
   const {id} = req.params;
   const order = await Order.findById(id);
 
-  if(!order) return next(new ErrorHandler ("Order Not Found", 404));
+  if(!order) return next(new ErrorHandler ("Order Not Found", 404))
 
-  switch(order.status){
+  switch (order.status){
     case "Processing":
       order.status = "Shipped"
       break;
@@ -129,7 +129,8 @@ export const processOrder = TryCatch(
       break;
     
     default:
-      order.status = "Delivered"
+      order.status
+        = "Delivered"
       break;
 
   }
