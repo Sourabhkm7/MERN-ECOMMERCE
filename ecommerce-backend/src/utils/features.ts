@@ -20,22 +20,21 @@ export const invalidateCache = async ({
     order,
     admin,
     userId,
-    orderId
+    orderId,
+    productId,
         }: InvalidateCacheProps) =>{
 
     if (product){
         const productKeys: string[] = [
             "latest-products",
             "categories",
-            "all-products"
+            "all-products",
         ];
 
-        const products = await Product.find({}).select("_id");
-
-        products.forEach((i) => {
-            productKeys.push(`product-${i._id}`)
-            
-        });
+        if (typeof productId === "string" ) 
+            productKeys.push( `product-${productId}`);
+        
+        if (typeof productId === "object")productId.forEach((i)=>productKeys.push(`product-${productId}`));
 
         myCache.del(productKeys);
     }
