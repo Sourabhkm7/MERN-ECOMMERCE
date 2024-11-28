@@ -8,7 +8,5 @@ const app = express.Router();
 app.post("/coupon/new", newCoupon );
 
 
-
-
 export default app;
 

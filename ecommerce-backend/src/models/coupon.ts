@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const schema = new mongoose.Schema({
     
-    coupon: {
+    code: {
         type: String,
         required: [true, "Please enter the coupon code"],
         unique: true,
