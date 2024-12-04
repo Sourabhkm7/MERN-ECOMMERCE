@@ -14,6 +14,6 @@ export const adminOnly = TryCatch(async (req,res, next) =>{
     if(!user) 
         return next(new ErrorHandler("Please Stop!! It can be done by Admin Only", 401));
     if(user.role !== "admin") 
-        return next(new ErrorHandler("Unauthorized Act, Please contact Admin", 401));
+        return next(new ErrorHandler("Unauthorized Act, Please contact Admin", 403));
     next();
 });
