@@ -10,17 +10,24 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
 
     else{
         const today = new Date();
-        const startOfThisMonth = new Date(today.getFullYear(), today.getMonth(),1)
-        const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1,1)
-        const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(),0)
-        const endOfThisMonth = today
 
-        const thisMonthProducts = await Product.find({
-            createdAt:{
-                $gte: startOfThisMonth,
-                $lte: today,
-            }
-        })
+        const thisMonth ={
+            start: new Date(today.getFullYear(), today.getMonth(),1),
+            end: today,
+
+        }
+    }
+    const lastMonth = {
+        start:new Date(today.getFullYear(), today.getMonth() -1,1),
+        end: new Date(today.getFullYear(), today.getMonth(),0)
+    };
+
+    const thisMonthProducts = await Product.find({
+        createdAt:{
+            $gte: startOfThisMonth,
+            $lte: today,
+        }
+    })
     }
     return res.status(200).json({
         success: true,
