@@ -3,6 +3,7 @@ import { TryCatch } from "../middlewares/error.js";
 import { Order } from "../models/order.js";
 import { Product } from "../models/product.js";
 import { User } from "../models/user.js";
+import { calculatePercentage } from "../utils/features.js";
 
 export const getDashboardStats = TryCatch(async(req,res,next) =>{
 
@@ -65,15 +66,62 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
         thisMonthOrders,
         lastMonthProducts,
         lastMonthUsers,
-        lastMonthOrders ] = await Promise.all([
+        lastMonthOrders,
+        ProductsCount,
+        UsersCount,
+        allOrders,
+        ] = await Promise.all([
         thisMonthProductsPromise, 
         thisMonthUsersPromise, 
         thisMonthOrdersPromise,
         lastMonthProductsPromise,
         lastMonthUsersPromise,
-        lastMonthOrdersPromise    
-    ])
+        lastMonthOrdersPromise,
+        Product.countDocuments(),
+        User.countDocuments(),
+        Order.find({}).select("total")
+    ]);
 
+    const thisMonthRevenue = thisMonthOrders.reduce(
+        (total, order) => total + (order.total || 0),0
+    );
+
+    const lastMonthRevenue = lastMonthOrders.reduce(
+        (total, order) => total + (order.total || 0),0
+    );
+
+
+    const ChangePercent ={
+        revenue: calculatePercentage(thisMonthRevenue,lastMonthRevenue),
+
+        product: calculatePercentage(
+            thisMonthProducts.length, 
+            lastMonthProducts.length
+        ),
+        user:calculatePercentage(
+            thisMonthUsers.length, 
+            lastMonthUsers.length
+        ),
+        order:calculatePercentage(
+            thisMonthOrders.length, 
+            lastMonthOrders.length
+        )
+    }
+
+    const revenue = allOrders.reduce(
+        (total, order) => total + (order.total || 0),0
+    );
+    const count = {
+        revenue,
+        user: UsersCount,
+        product: ProductsCount,
+        order: allOrders.length
+    }
+
+    stats ={
+        ChangePercent,
+        count
+    };
     }
     return res.status(200).json({
         success: true,
