@@ -13,6 +13,9 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
 
     else{
         const today = new Date();
+        const sixMonthsAgo = new Date();
+
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
 
         const thisMonth ={
             start: new Date(today.getFullYear(), today.getMonth(),1),
@@ -60,7 +63,17 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
             $gte: lastMonth.start,
             $lte: lastMonth.end,
         },
-    })
+    });
+
+    const lastSixMonthOrdersPromise =  Order.find({
+        createdAt:{
+            $gte: sixMonthsAgo,
+            $lte: today,
+        },
+    });
+
+
+
     const [thisMonthProducts,
         thisMonthUsers,
         thisMonthOrders,
@@ -70,6 +83,9 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
         ProductsCount,
         UsersCount,
         allOrders,
+        lastSixMonthOrders,
+        categories,
+
         ] = await Promise.all([
         thisMonthProductsPromise, 
         thisMonthUsersPromise, 
@@ -79,7 +95,9 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
         lastMonthOrdersPromise,
         Product.countDocuments(),
         User.countDocuments(),
-        Order.find({}).select("total")
+        Order.find({}).select("total"),
+        lastSixMonthOrdersPromise,
+        Product.distinct("category"),
     ]);
 
     const thisMonthRevenue = thisMonthOrders.reduce(
@@ -116,11 +134,42 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
         user: UsersCount,
         product: ProductsCount,
         order: allOrders.length
-    }
+    };
 
-    stats ={
+    const orderMonthCounts = new Array(6).fill(0);
+    const orderMonthRevenue= new Array(6).fill(0)
+
+    lastSixMonthOrders.forEach((order)=>{
+        const creationDate = order.createdAt;
+        const monthDiff = today.getMonth() - creationDate.getMonth();
+
+        if(monthDiff < 6){
+            orderMonthCounts[6-monthDiff-1] += 1;
+            orderMonthRevenue[6-monthDiff-1] += order.total;
+        }
+    });
+
+    const categoriesCountPromise = categories.map(category => Product.countDocuments({category}))
+
+    const categoriesCount = await Promise.all(categoriesCountPromise);
+
+    const categoryCount: Record<string,number> [] = [];
+
+    categories.forEach((category,i) =>{
+        categoryCount.push({
+            [category]: Math.round((categoriesCount[i]/ProductsCount)*100),
+
+        });
+    });
+
+    stats = {
+        categoryCount,
         ChangePercent,
-        count
+        count,
+        chart:{
+            order: orderMonthCounts,
+            revenue: orderMonthRevenue,
+        }
     };
     }
     return res.status(200).json({
