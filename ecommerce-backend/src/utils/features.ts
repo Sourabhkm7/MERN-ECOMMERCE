@@ -73,7 +73,7 @@ export const calculatePercentage = (thisMonth:number, lastMonth: number) =>{
 }
 
 
-export const getCategories = async ({
+export const getInventories = async ({
     
     categories,
     productsCount,
@@ -95,5 +95,5 @@ export const getCategories = async ({
 
         });
     });
-    return categoriesCount
+    return categoryCount
 }

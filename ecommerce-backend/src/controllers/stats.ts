@@ -3,7 +3,7 @@ import { TryCatch } from "../middlewares/error.js";
 import { Order } from "../models/order.js";
 import { Product } from "../models/product.js";
 import { User } from "../models/user.js";
-import { calculatePercentage } from "../utils/features.js";
+import { calculatePercentage, getInventories } from "../utils/features.js";
 
 export const getDashboardStats = TryCatch(async(req,res,next) =>{
 
@@ -155,18 +155,8 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
         }
     });
 
-    const categoriesCountPromise = categories.map(category => Product.countDocuments({category}))
+    const categoryCount: Record<string,number> [] = [] = await getInventories({categories,productsCount})
 
-    const categoriesCount = await Promise.all(categoriesCountPromise);
-
-    const categoryCount: Record<string,number> [] = [];
-
-    categories.forEach((category,i) =>{
-        categoryCount.push({
-            [category]: Math.round((categoriesCount[i]/productsCount)*100),
-
-        });
-    });
 
     const UserRatio = {
         male: usersCount - femaleUsersCount,
@@ -215,19 +205,27 @@ export const getPieCharts = TryCatch(async(req,res,next) =>{
 
     else{
 
-        const [processingOrder,shippedOrder,deliveredOrder] = await Promise.all([
+        const [processingOrder,shippedOrder,deliveredOrder, categories,productsCount] = await Promise.all([
             Order.countDocuments({status:"Processing"}),
             Order.countDocuments({status:"Shipped"}),
-            Order.countDocuments({status:"Delivered"})
+            Order.countDocuments({status:"Delivered"}),
+            Product.distinct("category"),
+            Product.countDocuments()
         ])
 
         const orderFullfillment = {
             processing: processingOrder,
             shipped: shippedOrder,
             delivered: deliveredOrder,
-        }
+        };
+        const productCategories = await getInventories({
+            categories,productsCount
+        })
+
+
         charts ={
             orderFullfillment,
+            productCategories,
 
         };
 
