@@ -229,6 +229,7 @@ export const getPieCharts = TryCatch(async(req,res,next) =>{
 
         };
 
+        
         myCache.set("admin-pie-charts", JSON.stringify(charts));
 
     }
