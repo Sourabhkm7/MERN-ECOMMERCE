@@ -205,12 +205,31 @@ export const getPieCharts = TryCatch(async(req,res,next) =>{
 
     else{
 
-        const [processingOrder,shippedOrder,deliveredOrder, categories,productsCount] = await Promise.all([
+        const alllOrderPromise = Order.find({}).select([
+            "total",
+            "discount",
+            "subtotal", 
+            "tax",
+            "shippingCharges"
+        ]);
+
+        const [
+            processingOrder,
+            shippedOrder,
+            deliveredOrder, 
+            categories,
+            productsCount,
+            outOfStock,
+            allOrders
+        ] = await Promise.all([
             Order.countDocuments({status:"Processing"}),
             Order.countDocuments({status:"Shipped"}),
             Order.countDocuments({status:"Delivered"}),
             Product.distinct("category"),
-            Product.countDocuments()
+            Product.countDocuments(),
+            Product.countDocuments({stock: 0}),
+            alllOrderPromise
+            
         ])
 
         const orderFullfillment = {
@@ -220,12 +239,30 @@ export const getPieCharts = TryCatch(async(req,res,next) =>{
         };
         const productCategories = await getInventories({
             categories,productsCount
-        })
+        });
 
+        const stockAvailability={
+            inStock: productsCount - outOfStock,
+            outOfStock,
+        };
+
+        const grossIncome = allOrders.reduce(
+            (prev,order) => (prev+order.total || 0),
+        0)
+
+        const revenueDistribution = {
+            netMargin: 343,
+            discount: 3434,
+            productionCost: 3434,
+            burnt:3434,
+            marketingCost: 3434,
+        }
 
         charts ={
             orderFullfillment,
             productCategories,
+            stockAvailability,
+            revenueDistribution
 
         };
 
