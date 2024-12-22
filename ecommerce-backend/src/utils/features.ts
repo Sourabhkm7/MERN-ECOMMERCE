@@ -4,16 +4,12 @@ import { InvalidateCacheProps, OrderItemType } from "../types/types.js";
 import { Product } from "../models/product.js";
 // import { Order } from "../models/order.js";
 
-
-
 export const connectDB = (uri:string) =>{
     mongoose.connect(uri,{
         dbName:"Ecommerce_24"
     }).then((c)=>console.log(`DB Connected to ${c.connection.host}`))
     .catch((e)=>console.log(e));
 };
-
-
 
 export const invalidateCache = async ({
     product,
@@ -48,11 +44,9 @@ export const invalidateCache = async ({
         myCache.del(ordersKeys);
     }
     if (admin){
-        
+
     }
-
 };
-
 
 export const reduceStock = async(orderItems:OrderItemType[]) =>{
 
@@ -65,14 +59,11 @@ export const reduceStock = async(orderItems:OrderItemType[]) =>{
     }
 };
 
-
 export const calculatePercentage = (thisMonth:number, lastMonth: number) =>{
     if(lastMonth===0) return thisMonth*100;
-    const percent = ((thisMonth-lastMonth)/lastMonth)*100
+    const percent = (thisMonth/lastMonth)*100
     return Number(percent.toFixed(0));
 }
-
-
 export const getInventories = async ({
     
     categories,
