@@ -319,12 +319,13 @@ export const getBarCharts = TryCatch(async(req,res, next) =>{
    let charts;
 
    const key = "admin-bar-charts";
+   const today = new Date();
+
 
    if(myCache.has(key)) charts = JSON.parse(myCache.get(key)as string);
 
    else{
 
-    const today = new Date();
 
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
@@ -332,9 +333,39 @@ export const getBarCharts = TryCatch(async(req,res, next) =>{
     const twelveMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 12);
 
-    const [] = await Promise.all([
-        Product.find({})
+    const sixMonthProductPromise =  Product.find({
+        createdAt:{
+            $gte: sixMonthsAgo,
+            $lte: today,
+        },
+    });
+
+    const sixMonthUsersPromise =  User.find({
+        createdAt:{
+            $gte: sixMonthsAgo,
+            $lte: today,
+        },
+    });
+
+    const twelveMonthOrdersPromise =  Order.find({
+        createdAt:{
+            $gte: twelveMonthsAgo,
+            $lte: today,
+        },
+    });
+
+    const [
+        products,
+        user,
+        orders
+
+    ] = await Promise.all([
+        sixMonthProductPromise,
+        sixMonthUsersPromise,
+        twelveMonthOrdersPromise,
     ]);
+
+    
 
     charts ={
 
