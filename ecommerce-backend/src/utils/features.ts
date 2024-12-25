@@ -93,12 +93,11 @@ interface MyDocument extends Document {
     createdAt: Date;
 }
 
-type FuncProps = {length:number, docArr:MyDocument []}
+type FuncProps = {length:number, docArr:MyDocument [], today:Date}
 
-export const func1 = ({length, docArr}:FuncProps) =>{
+export const func1 = ({length, docArr, today}:FuncProps) =>{
 
-    const today = new Date();
-    const data= new Array(length).fill(0)
+    const data : number[]= new Array(length).fill(0)
 
     docArr.forEach((i)=>{
         const creationDate = i.createdAt;
@@ -108,4 +107,5 @@ export const func1 = ({length, docArr}:FuncProps) =>{
             data[length-monthDiff-1] += 1;
         }
     });
+    return data;
 }

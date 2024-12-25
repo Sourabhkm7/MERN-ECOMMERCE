@@ -319,13 +319,12 @@ export const getBarCharts = TryCatch(async(req,res, next) =>{
    let charts;
 
    const key = "admin-bar-charts";
-   const today = new Date();
-
-
+    
    if(myCache.has(key)) charts = JSON.parse(myCache.get(key)as string);
 
    else{
 
+    const today = new Date();
 
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
