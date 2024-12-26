@@ -95,7 +95,7 @@ interface MyDocument extends Document {
 
 type FuncProps = {length:number, docArr:MyDocument [], today:Date}
 
-export const func1 = ({length, docArr, today}:FuncProps) =>{
+export const getChartData =  ({length, docArr, today}:FuncProps) =>{
 
     const data : number[]= new Array(length).fill(0)
 
