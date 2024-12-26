@@ -93,7 +93,7 @@ interface MyDocument extends Document {
     createdAt: Date;
 }
 
-type FuncProps = {length:number, docArr:MyDocument [], today:Date}
+type FuncProps = {length:number, docArr:MyDocument[], today:Date}
 
 export const getChartData =  ({length, docArr, today}:FuncProps) =>{
 

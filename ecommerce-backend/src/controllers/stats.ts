@@ -337,25 +337,25 @@ export const getBarCharts = TryCatch(async(req,res, next) =>{
             $gte: sixMonthsAgo,
             $lte: today,
         },
-    });
+    }).select("createdAt");
 
     const sixMonthUsersPromise =  User.find({
         createdAt:{
             $gte: sixMonthsAgo,
             $lte: today,
         },
-    });
+    }).select("createdAt");
 
     const twelveMonthOrdersPromise =  Order.find({
         createdAt:{
             $gte: twelveMonthsAgo,
             $lte: today,
         },
-    });
+    }).select("createdAt");
 
     const [
         products,
-        user,
+        users,
         orders
 
     ] = await Promise.all([
@@ -364,12 +364,14 @@ export const getBarCharts = TryCatch(async(req,res, next) =>{
         twelveMonthOrdersPromise,
     ]);
 
-    const productsCount = getChartData({length:6, today, docArr:products });
-    const UsersCount  = getChartData({length:6, today, docArr:products });
-    const ordersCount = getChartData({length:12,today, docArr:products });
+    const productCounts = getChartData({length:6, today, docArr:products as [] });
+    const usersCounts  = getChartData({length:6, today, docArr:users as [] });
+    const ordersCounts = getChartData({length:12,today, docArr:orders as [] });
 
     charts ={
-
+        users: usersCounts,
+        product: productCounts,
+        orders: ordersCounts,
      }
      myCache.set(key,JSON.stringify(charts));
    }
