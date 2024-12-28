@@ -403,31 +403,28 @@ export const getLineCharts = TryCatch(async(req,res,next) =>{
                 $lte: today,
             },
         };
-        const twelveMonthProductsPromise =  Product.find({baseQuery}).select("createdAt");
 
-        const twelveMonthUsersPromise =  User.find({baseQuery}).select("createdAt");
-    
-        const twelveMonthOrdersPromise =  Order.find({baseQuery}).select("createdAt");
-    
         const [
             products,
             users,
             orders
     
         ] = await Promise.all([
-            twelveMonthProductsPromise,
-            twelveMonthUsersPromise,
-            twelveMonthOrdersPromise,
+            Product.find({baseQuery}).select("createdAt"),
+            User.find({baseQuery}).select("createdAt"),
+            Order.find({baseQuery}).select("createdAt"),
+
         ]);
     
-        const productCounts = getChartData({length:6, today, docArr:products as [] });
-        const usersCounts  = getChartData({length:6, today, docArr:users as [] });
-        const ordersCounts = getChartData({length:12,today, docArr:orders as [] });
+        const productCounts = getChartData({length:12, today, docArr:products as [] });
+        const usersCounts  = getChartData({length:12, today, docArr:users as [] });
+        const discount = getChartData({length:12,today, docArr:orders as [], property:"discount" });
     
         charts ={
             users: usersCounts,
             product: productCounts,
-            orders: ordersCounts,
+            discount: discount,
+            revenue: [34]
         }
         myCache.set(key,JSON.stringify(charts));
     }
