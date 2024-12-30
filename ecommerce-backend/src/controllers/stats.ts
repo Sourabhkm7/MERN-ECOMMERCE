@@ -412,19 +412,20 @@ export const getLineCharts = TryCatch(async(req,res,next) =>{
         ] = await Promise.all([
             Product.find({baseQuery}).select("createdAt"),
             User.find({baseQuery}).select("createdAt"),
-            Order.find({baseQuery}).select("createdAt"),
+            Order.find({baseQuery}).select(["createdAt", "discount", "total"]),
 
         ]);
     
         const productCounts = getChartData({length:12, today, docArr:products as [] });
         const usersCounts  = getChartData({length:12, today, docArr:users as [] });
         const discount = getChartData({length:12,today, docArr:orders as [], property:"discount" });
+        const revenue = getChartData({length:12,today, docArr:orders as [], property:"total" });
     
         charts ={
             users: usersCounts,
             product: productCounts,
-            discount: discount,
-            revenue: [34]
+            discount,
+            revenue,
         }
         myCache.set(key,JSON.stringify(charts));
     }
@@ -432,5 +433,5 @@ export const getLineCharts = TryCatch(async(req,res,next) =>{
     return res.status(200).json({
         success: true,
         charts,
-        })
-})
+        });
+});

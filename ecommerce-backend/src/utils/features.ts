@@ -95,7 +95,7 @@ interface MyDocument extends Document {
     total?:number;
 }
 
-type FuncProps = {length:number, docArr:MyDocument[], today:Date, property?:string}
+type FuncProps = {length:number; docArr:MyDocument[]; today:Date; property?:'discount'|'total'}
 
 export const getChartData =  ({length, docArr, today, property}:FuncProps) =>{
 
@@ -106,10 +106,9 @@ export const getChartData =  ({length, docArr, today, property}:FuncProps) =>{
         const monthDiff = (today.getMonth() - creationDate.getMonth() + 12)%12;
 
         if(monthDiff < length){
-            data[length-monthDiff-1] += property ? i.discount! :1;
+            data[length-monthDiff-1] += property ? i[property]! :1;
         }
     });
     return data;
 }
 
-//7.28.50
