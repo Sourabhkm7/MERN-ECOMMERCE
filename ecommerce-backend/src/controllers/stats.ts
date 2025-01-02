@@ -144,20 +144,23 @@ export const getDashboardStats = TryCatch(async(req,res,next) =>{
         order: allOrders.length
     };
 
-    const orderMonthCounts = new Array(6).fill(0);
-    const orderMonthRevenue= new Array(6).fill(0)
+    const orderMonthCounts = getChartData({
+        length:6,
+        today, 
+        docArr:lastSixMonthOrders as [], 
+     });
 
-    lastSixMonthOrders.forEach((order)=>{
-        const creationDate = order.createdAt;
-        const monthDiff = (today.getMonth() - creationDate.getMonth() + 12)%12;
+    const orderMonthRevenue= getChartData({
+        length:6,
+        today, 
+        docArr:lastSixMonthOrders as [],
+        property:"total" 
+     });
 
-        if(monthDiff < 6){
-            orderMonthCounts[6-monthDiff-1] += 1;
-            orderMonthRevenue[6-monthDiff-1] += order.total;
-        }
+    const categoryCount = await getInventories({
+        categories,
+        productsCount
     });
-
-    const categoryCount: Record<string,number> [] = [] = await getInventories({categories,productsCount})
 
 
     const UserRatio = {
