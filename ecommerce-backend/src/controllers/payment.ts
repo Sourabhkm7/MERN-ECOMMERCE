@@ -1,8 +1,26 @@
+import { stripe } from "../app.js";
 import { TryCatch } from "../middlewares/error.js"; // Middleware for wrapping asynchronous functions to catch errors
 import { Coupon } from "../models/coupon.js"; // Mongoose model for interacting with the "coupon" collection
 import ErrorHandler from "../utils/utilty-class.js"; // Custom utility class for handling and throwing errors
 
-// Controller function for creating a new coupon
+export const createPaymentIntent = TryCatch(async (req, res, next) => {
+    const { amount } = req.body;
+
+    if (!amount) 
+        return next(new ErrorHandler("Please Enter amount", 400));
+
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Number(amount) * 100,
+            currency: "inr",   
+        })
+
+    return res.status(201).json({
+        success: true, 
+        clientSecret: paymentIntent.client_secret, 
+    });
+});
+
+
 export const newCoupon = TryCatch(async (req, res, next) => {
     // Extracting the `coupon` code and `amount` from the request body
     const { coupon, amount } = req.body;

@@ -11,12 +11,9 @@ export const connectDB = (uri:string) =>{
     .catch((e)=>console.log(e));
 };
 
-/**
- * Connects to the MongoDB database using the provided URI.
- * @param {string} uri - The connection string for the MongoDB instance.
- */
 
-export const invalidateCache = async ({
+
+export const invalidateCache = ({
     product,
     order,
     admin,
@@ -49,7 +46,7 @@ export const invalidateCache = async ({
         myCache.del(ordersKeys);
     }
     if (admin){
-
+        myCache.del(["admin-stats", "admin-pie-charts", "admin-bar-charts", "admin-line-charts"]);
     }
 };
 
