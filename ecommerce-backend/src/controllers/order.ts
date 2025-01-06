@@ -26,23 +26,27 @@ export const myOrders = TryCatch(async (req,res,next) =>{
 }
 );
 
-export const allOrders = TryCatch(async (req,res,next) =>{
+// Controller to get all orders
+export const allOrders = TryCatch(async (req, res, next) => {
+  const key = `all-orders`;
 
-  const key = `all-orders`
+  let orders = [];
 
-  let orders = []; 
-
-  if (myCache.has(key))orders = JSON.parse(myCache.get(key) as string);
-  else {
-    orders = await Order.find().populate("user","name");
-    myCache.set(key,JSON.stringify(orders));
+  // Check if orders are cached
+  if (myCache.has(key)) {
+    orders = JSON.parse(myCache.get(key) as string);
+  } else {
+    // Fetch orders from database and cache them
+    orders = await Order.find().populate("user", "name");
+    myCache.set(key, JSON.stringify(orders));
   }
-  return res.status(200).json ({
-      success: true, 
-      orders,
+
+  // Return response with orders
+  return res.status(200).json({
+    success: true,
+    orders,
   });
-}
-);
+});
 
 
 export const getSingleOrder = TryCatch(async (req,res,next) =>{
